@@ -1,0 +1,117 @@
+<!--
+1. 도서관리 (도서 입력, 수정, 삭제, 검색
+2. 대여 및 반납관리
+3. 서평관리(서평, 수정, 서평보기)
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>도서 관리 시스템</title>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous"></script>
+    <!-- bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!--  -->
+    <link href="../css/list.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">도서 관리 시스템</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+            <span class="navbar-form navbar-right">
+            <input type="text" id="keyword"class="form-control" placeholder="Search..." onkeyup="searchBook()">
+          </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="#">도서 입력 <span class="sr-only">(current)</span></a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">Insert Book</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <td class="field">image</td>
+                        <td><div class="input-group col-md-3">
+                            <input type="text" class="form-control" name="img"readonly>
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">첨부</button>
+                            </span>
+                        </div>
+                    </tr>
+                    <tr>
+                        <td class="field">isbn</td>
+                        <td><input name="isbn" type="text" size="30" placeholder="도서 고유번호"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">title</td>
+                        <td><input name="title" type="text" size="30" placeholder="도서 제목"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">author</td>
+                        <td><input name="author" type="text" size="30" placeholder="작가 명"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">date</td>
+                        <td><input name="date" type="date" size="30" placeholder="출판 일"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">page</td>
+                        <td><input name="page" type="text" size="10" placeholder="도서 페이지"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">price</td>
+                        <td><input name="price" type="text" size="10" placeholder="도서 가격"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">translator</td>
+                        <td><input name="translator" type="text" size="30"  placeholder="번역자 명"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">supplement</td>
+                        <td><input name="supplement" type="text" size="30" placeholder="사은품"></td>
+                    </tr>
+                    <tr>
+                        <td class="field">publisher</td>
+                        <td><input name="publisher" type="text" size="30"  placeholder="출판사"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script src="../js/insert.js"></script>
+</html>
