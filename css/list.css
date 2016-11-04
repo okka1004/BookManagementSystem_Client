@@ -107,3 +107,12 @@ body {
 .field{
   font-weight: bold;
 }
+#img_box > img{
+  width: 100%;
+}
+
+#myDiv{
+  display: inline-block;
+  color: white;
+}
+html { overflow-y:scroll; }

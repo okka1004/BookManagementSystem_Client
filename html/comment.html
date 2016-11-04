@@ -66,62 +66,28 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li ><a href="list.html">도서 검색 <span class="sr-only">(current)</span></a></li>
-                <li class="active"><a href="#">도서 입력<span class="sr-only">(current)</span></a></li>
-                <li><a href="comment.html">서평 검색<span class="sr-only">(current)</span></a></li>
+                <li><a href="insert.html">도서 입력<span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="#">서평 검색<span class="sr-only">(current)</span></a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 class="sub-header">Insert Book</h2>
+            <h2 class="sub-header">Comment Search</h2>
+            <div><input type="text"><input type="button" id="search_comment" value="서평 검색"></div>
             <div class="table-responsive">
                 <table class="table table-striped">
-                    <tbody>
+                    <thead>
                     <tr>
-                        <td class="field">image</td>
-                        <td><div class="input-group col-md-3">
-                            <input type="file" id="file1" onchange="fileInfo(this)" />
-                            <div id="img_box"></div>
-                            </span>
-                        </div>
+                        <th>id</th>
+                        <th>book title</th>
+                        <th>book author</th>
+                        <th>comment</th>
+                        <th>publisher</th>
                     </tr>
-                    <tr>
-                        <td class="field">isbn</td>
-                        <td><input id="isbn" type="text" size="30" placeholder="도서 고유번호" required></td>
-                    </tr>
-                    <tr>
-                        <td class="field">title</td>
-                        <td><input id="title" type="text" size="30" placeholder="도서 제목" required></td>
-                    </tr>
-                    <tr>
-                        <td class="field">author</td>
-                        <td><input id="author" type="text" size="30" placeholder="작가 명" required></td>
-                    </tr>
-                    <tr>
-                        <td class="field">date</td>
-                        <td><input id="date" type="date" size="30" placeholder="출판 일"></td>
-                    </tr>
-                    <tr>
-                        <td class="field">page</td>
-                        <td><input id="page" type="text" size="10" placeholder="도서 페이지"></td>
-                    </tr>
-                    <tr>
-                        <td class="field">price</td>
-                        <td><input id="price" type="text" size="10" placeholder="도서 가격" required></td>
-                    </tr>
-                    <tr>
-                        <td class="field">translator</td>
-                        <td><input id="translator" type="text" size="30"  placeholder="번역자 명"></td>
-                    </tr>
-                    <tr>
-                        <td class="field">supplement</td>
-                        <td><input id="supplement" type="text" size="30" placeholder="사은품"></td>
-                    </tr>
-                    <tr>
-                        <td class="field">publisher</td>
-                        <td><input id="publisher" type="text" size="30"  placeholder="출판사"></td>
-                    </tr>
+                    </thead>
+                    <tbody id="myTbody">
+
                     </tbody>
                 </table>
-                <div><input type="button" value="insert" id="btn_insert"></div>
             </div>
         </div>
     </div>
