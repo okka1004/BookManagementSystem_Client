@@ -68,6 +68,8 @@
                 <li ><a href="list.html">도서 검색 <span class="sr-only">(current)</span></a></li>
                 <li><a href="insert.html">도서 입력<span class="sr-only">(current)</span></a></li>
                 <li class="active"><a href="#">서평 검색<span class="sr-only">(current)</span></a></li>
+                <li><a href="myComment.html">내 서평 관리<span class="sr-only">(current)</span></a></li>
+                <li><a href="rent_return.html">대여 조회<span class="sr-only">(current)</span></a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -77,11 +79,13 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th id="seq">seq</th>
                         <th>id</th>
                         <th>book title</th>
                         <th>book author</th>
                         <th>comment</th>
                         <th>publisher</th>
+                        <th>delete</th>
                     </tr>
                     </thead>
                     <tbody id="myTbody">

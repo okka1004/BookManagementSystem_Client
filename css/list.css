@@ -116,3 +116,7 @@ body {
   color: white;
 }
 html { overflow-y:scroll; }
+
+#seq{
+  display: none;
+}

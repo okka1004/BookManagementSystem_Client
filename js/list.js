@@ -191,6 +191,9 @@ function searchBook() {
 					a_author=result[i].author;
 					a_price=result[i].price;
 					a_base64=result[i].base64;
+					a_rent=result[i].rent;
+
+
 
 					var tr = $("<tr></tr>").attr("data-isbn", a_isbn);
 					var title = $("<td></td>").text(a_title);
@@ -208,6 +211,42 @@ function searchBook() {
 					var datail = $("<button></button>").attr("class", "btn btn-default").attr("data-target", "#"+a_isbn).attr("data-toggle", "modal").text("상세보기");
 					var detail_td = $("<td></td>").append(datail);
 
+					var rent=$("<input />").attr("type", "button").attr("value", "대여가능").attr("disabled", false).attr("class", "btn btn-success");
+
+
+					if(result[i].rent!=null){
+						rent.attr("class", "btn btn-danger").attr("value", "대여중").attr("disabled", true);
+					}
+
+
+
+
+					var this_isbn=a_isbn;
+					/*
+					 *
+					 * 대여중 표시
+					 *
+					 * */
+					$.ajax({
+							url: "http://localhost:8080/book/showRentId",
+							type: "GET",
+							dataType: "jsonp",
+							jsonp: "callback",
+							data: {
+								isbn: this_isbn
+							},
+							success: function (result) {
+								rent.attr("value", "대여중 by"+result.rent_id);
+							},
+							error: function (result) {
+								console.log("대여중 아이디 표시 실패");
+							}
+						});
+
+
+
+					var rent_td = $("<td></td>").append(rent);
+
 					tr.append(img_td);
 					tr.append(title);
 					tr.append(author);
@@ -215,9 +254,84 @@ function searchBook() {
 					tr.append(delete_td);
 					tr.append(update_td);
 					tr.append(detail_td);
+					tr.append(rent_td);
+
 
 
 					$("#myTbody").append(tr);
+
+
+
+
+
+
+					/*
+					*
+					* 대여
+					*
+					* */
+					rent.on("click", function (){
+
+						var id=$("#mytoggle").text();
+						var now=$(this);
+						/*
+						*
+						* 책 대여 여부 확인
+						*
+						* */
+						$.ajax({
+
+							url: "http://localhost:8080/book/isRent",
+							type: "GET",
+							dataType: "jsonp",
+							jsonp: "callback",
+							data: {
+								id : id
+							},
+							success: function (result) {
+
+								if(result==false){
+									alert("대여 가능");
+
+									if(confirm("대여하시겠습니까?")){
+
+										var isbn=now.parent().parent().attr("data-isbn");
+										var id=$("#mytoggle").text();
+
+										console.log("isbn : "+isbn +" / id : "+id);
+
+										$.ajax({
+
+											url: "http://localhost:8080/book/bookRent",
+											type: "GET",
+											dataType: "jsonp",
+											jsonp: "callback",
+											data: {
+												isbn: isbn,
+												id : id
+											},
+											success: function (result) {
+												alert("대여 성공");
+												now.attr("class", "btn btn-danger").attr("value", "대여중 by "+id).attr("disabled", true);
+
+											},
+											error: function () {
+												alert("대여 실패");
+											}
+										});
+									}
+
+								}
+								else{
+									alert("대여 불가능. 이미 대여중입니다.");
+								}
+							},
+							error: function () {
+								alert("대여 가능 여부 검사 실패");
+							}
+						});
+
+					});
 
 
 					/*
@@ -586,8 +700,6 @@ function searchBook() {
 
 										myisbn="";
 
-
-
 									},
 									error: function () {
 										alert("코멘트 입력 실패");
@@ -612,9 +724,6 @@ function searchBook() {
 	}
 }
 
-function comment_insert() {
-
-}
 
 function mySort() {
 
@@ -671,6 +780,8 @@ $(function () {
 	});
 
 });
+
+
 function fileInfo(f){
 	var file = f.files; // files 를 사용하면 파일의 정보를 알 수 있음
 
@@ -715,8 +826,12 @@ $("#search_comment").on("click", function () {
 			var author;
 			var publisher;
 			var comment;
+			var seq;
+
+			var myId=$("#mytoggle").text();
 
 			for(var i=0 ; i<result.length ; i++) {
+				seq=result[i].seq;
 				id=result[i].id;
 				title=result[i].title;
 				author=result[i].author;
@@ -725,12 +840,17 @@ $("#search_comment").on("click", function () {
 
 				var tr=$("<tr></tr>");
 
+				var seq_id=$("<td></td>").text(seq);
+				seq_id.css("display", "none");
 				var id_td=$("<td></td>").text(id);
 				var title_td=$("<td></td>").text(title);
 				var author_td=$("<td></td>").text(author);
 				var publisher_td=$("<td></td>").text(publisher);
 				var comment_td=$("<td></td>").text(comment);
 
+				var del_td;
+
+				tr.append(seq_id);
 				tr.append(id_td);
 				tr.append(title_td);
 				tr.append(author_td);
@@ -739,9 +859,41 @@ $("#search_comment").on("click", function () {
 
 				$("#myTbody").append(tr);
 
+				if(myId==result[i].id){
 
+					del_td=$("<td></td>");
+					var del_btn=$("<input>").attr("type","button").attr("value", "delete").attr("id", "del_btn");
+
+					del_td.append(del_btn);
+					tr.append(del_td);
+
+					del_btn.on("click", function () {
+
+						var seq_tt=$(this).parent().parent().find("td:nth-child(1)");
+						var seq=seq_tt.text();
+						console.log("seq : "+seq);
+
+						$.ajax({
+							url: "http://localhost:8080/book/commentDelete",
+							type: "GET",
+							dataType: "jsonp",
+							jsonp: "callback",
+							data: {
+								seq: seq
+							},
+							success: function (result) {
+								alert("삭제 성공");
+								seq_tt.parent().empty();
+							},
+							error: function () {
+								alert("삭제 실패");
+							}
+						});
+
+
+					});
+				}
 			}
-
 		},
 		error:function () {
 			alert("검색 실패");
@@ -749,3 +901,199 @@ $("#search_comment").on("click", function () {
 	});
 
 });
+
+
+/*
+*
+* 내 서평 검색
+*
+* */
+
+$("#showMyComment").on("click", function () {
+
+	$("#myTbody").empty();
+
+	var myid=$("#mytoggle").text();
+	console.log("Comment의 id : "+myid);
+
+	$.ajax({
+		url:"http://localhost:8080/book/myCommentCall",
+		type:"GET",
+		dataType:"jsonp",
+		jsonp:"callback",
+		data:{
+			id : myid
+		},
+		success:function (result) {
+
+			var id;
+			var title;
+			var author;
+			var publisher;
+			var comment;
+			var seq;
+
+			for(var i=0 ; i<result.length ; i++) {
+
+				seq=result[i].seq;
+				id=result[i].id;
+				title=result[i].title;
+				author=result[i].author;
+				publisher=result[i].publisher;
+				comment=result[i].comment;
+
+
+				var tr=$("<tr></tr>");
+
+				var seq_id=$("<td></td>").text(seq);
+				seq_id.css("display", "none");
+				var id_td=$("<td></td>").text(id);
+				var title_td=$("<td></td>").text(title);
+				var author_td=$("<td></td>").text(author);
+				var publisher_td=$("<td></td>").text(publisher);
+				var comment_td=$("<td></td>").text(comment);
+
+				var del_td=$("<td></td>");
+				var del_btn=$("<input>").attr("type","button").attr("value", "delete").attr("id", "del_btn");
+
+				del_td.append(del_btn);
+
+				tr.append(seq_id);
+				tr.append(id_td);
+				tr.append(title_td);
+				tr.append(author_td);
+				tr.append(comment_td);
+				tr.append(publisher_td);
+				tr.append(del_td);
+
+				$("#myTbody").append(tr);
+
+				del_btn.on("click", function () {
+
+					var seq_tt=$(this).parent().parent().find("td:nth-child(1)");
+					var seq=seq_tt.text();
+					console.log("seq : "+seq);
+
+					$.ajax({
+
+						url: "http://localhost:8080/book/commentDelete",
+						type: "GET",
+						dataType: "jsonp",
+						jsonp: "callback",
+						data: {
+							seq: seq
+						},
+						success: function (result) {
+							alert("삭제 성공");
+							seq_tt.parent().empty();
+						},
+						error: function () {
+							alert("삭제 실패");
+						}
+					});
+				});
+			}
+		},
+		error:function () {
+			alert("내 서평 접속 실패");
+		}
+	});
+
+});
+
+
+/*
+ *
+ * 회원ID로 대여상태 조회
+ *
+ */
+$("#current_status").on("click", function (){
+
+	$("#myTbody").empty();
+
+	var id=$("#current_status").parent().find("[type=text]").val();
+	var myid=$("#mytoggle").text();
+
+
+	$.ajax({
+		url: "http://localhost:8080/book/currentStatus",
+		type: "GET",
+		dataType: "jsonp",
+		jsonp: "callback",
+		data: {
+			id: id
+		},
+		success: function (result) {
+
+
+			alert("대여 목록 출력 성공");
+
+			var isbn = result.isbn;
+			var title = result.title;
+			var author = result.author;
+			var base64 = result.base64;
+			var publisher = result.publisher;
+
+
+			var tr = $("<tr></tr>").attr("data-isbn", isbn);
+			var title_td = $("<td></td>").text(title);
+			var author_td = $("<td></td>").text(author);
+			var publisher_td = $("<td></td>").text(publisher);
+
+			var img = $("<img />").attr("src", base64);
+			var img_td = $("<td></td>").append(img);
+
+			tr.append(img_td);
+			tr.append(title_td);
+			tr.append(author_td);
+			tr.append(publisher_td);
+			tr.append(id);
+
+			$("#myTbody").append(tr);
+
+			var myreturn;
+
+			if(id==myid){
+
+				myreturn=$("<input />").attr("type", "button").attr("class", "btn btn-warning").attr("value", "반납");
+				var return_td=$("<td></td>").append(myreturn);
+
+				tr.append(return_td);
+			}
+
+			myreturn.on('click', function () {
+
+
+				$.ajax({
+					url: "http://localhost:8080/book/returnBook",
+					type: "GET",
+					dataType: "jsonp",
+					jsonp: "callback",
+					data: {
+						id: id
+					},
+					success: function (result) {
+						if(result==true){
+							alert("반납 성공");
+							myreturn.attr("class", "btn btn-success").attr("value", "대여");
+
+						}else{
+							alert("반납 실패");
+						}
+					},
+					error: function () {
+						alert("반납 시도 실패");
+					}
+				});
+			});
+
+
+		},
+
+		error: function () {
+			alert("대여 목록 출력 실패");
+		}
+	});
+});
+
+
