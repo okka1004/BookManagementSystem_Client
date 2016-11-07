@@ -142,7 +142,6 @@ $("#login").on("click", function () {
 	}else if(pw==""){
 		alert("비밀번호를 입력해주세요");
 	}else{
-
 		$.ajax({
 			url:"http://localhost:8080/book/bookLogin",
 			type:"GET",
@@ -159,7 +158,7 @@ $("#login").on("click", function () {
 				}
 				else{
 					alert("로그인 성공");
-					$(location).attr('href', "list.html?id="+id);
+					$(location).attr('href', "main.html");
 				}
 			},
 			error:function () {
