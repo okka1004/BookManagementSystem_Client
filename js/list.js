@@ -95,8 +95,17 @@ $("#join").on("click", function () {
 					pw: pw
 				},
 				success:function (result) {
+
+					if (result == true) {
+
 					alert("회원가입 성공");
 					$(location).attr('href', "index.html");
+					}
+					else{
+						alert("아이디가 중복됩니다.");
+					}
+
+
 				},
 				error:function () {
 					alert("회원가입 실패");
@@ -211,38 +220,13 @@ function searchBook() {
 					var datail = $("<button></button>").attr("class", "btn btn-default").attr("data-target", "#"+a_isbn).attr("data-toggle", "modal").text("상세보기");
 					var detail_td = $("<td></td>").append(datail);
 
-					var rent=$("<input />").attr("type", "button").attr("value", "대여가능").attr("disabled", false).attr("class", "btn btn-success");
+					var rent=$("<input />").attr("type", "button").attr("value", "대여가능").attr("disabled", false).attr("class", "btn btn-success").attr("name",result[i].isbn);
 
+					var rent_name=result[i].rent;
 
 					if(result[i].rent!=null){
-						rent.attr("class", "btn btn-danger").attr("value", "대여중").attr("disabled", true);
+						rent.attr("class", "btn btn-danger").attr("value", "대여중").attr("disabled", true).attr("value", "대여중 by "+rent_name);
 					}
-
-
-
-
-					var this_isbn=a_isbn;
-					/*
-					 *
-					 * 대여중 표시
-					 *
-					 * */
-					$.ajax({
-							url: "http://localhost:8080/book/showRentId",
-							type: "GET",
-							dataType: "jsonp",
-							jsonp: "callback",
-							data: {
-								isbn: this_isbn
-							},
-							success: function (result) {
-								rent.attr("value", "대여중 by"+result.rent_id);
-							},
-							error: function (result) {
-								console.log("대여중 아이디 표시 실패");
-							}
-						});
-
 
 
 					var rent_td = $("<td></td>").append(rent);
@@ -377,7 +361,6 @@ function searchBook() {
 					btn_update.on("click", function () {
 
 						var title = $(this).parent().parent().find("td:nth-child(2)").text();
-						console.log(title);
 						var title_updatebox = $("<input/>").attr("type", "text").attr("size", "80").val(title);
 
 						var author = $(this).parent().parent().find("td:nth-child(3)").text();
@@ -386,73 +369,80 @@ function searchBook() {
 						var price = $(this).parent().parent().find("td:nth-child(4)").text();
 						var price_updatebox = $("<input/>").attr("type", "text").val(price);
 
-						$(this).parent().parent().find("td:nth-child(2)").text("");
-						$(this).parent().parent().find("td:nth-child(2)").append(title_updatebox);
-
-
-						$(this).parent().parent().find("td:nth-child(3)").text("");
-						$(this).parent().parent().find("td:nth-child(3)").append(author_updatebox);
-
-
-						$(this).parent().parent().find("td:nth-child(4)").text("");
-						$(this).parent().parent().find("td:nth-child(4)").append(price_updatebox);
-						//$(this).parent().parent().find("[type=button]").attr("disabled", "disabled");
-
 						var now = $(this);
 
-						now.attr("value", "수정 완료");
+							if(now.attr("value")=="수정"){
 
-						//text박스에서 '수정확인버튼 눌렀을 때 수정 실행
-						$(this).on("click", function () {
-
-							var isbn = $(this).parent().parent().attr("data-isbn");
-							var title = title_updatebox.val();
-							var author = author_updatebox.val();
-							var price = price_updatebox.val();
-
-							var tr = $(this).parent().parent();
-
-							$.ajax({
-								url: "http://localhost:8080/book/bookUpdate",
-								type: "GET",
-								dataType: "jsonp",
-								jsonp: "callback",
-								data: {
-									isbn: isbn,
-									title: title,
-									author: author,
-									price: price
-								},
-								success: function (result) {
-
-									if(result==true){
-
-										alert("수정 성공");
-										now.attr("value", "수정");
+								$(this).parent().parent().find("td:nth-child(2)").text("");
+								$(this).parent().parent().find("td:nth-child(2)").append(title_updatebox);
 
 
-										tr.find("td:nth-child(2)").empty();
-										tr.find("td:nth-child(2)").text(title);
+								$(this).parent().parent().find("td:nth-child(3)").text("");
+								$(this).parent().parent().find("td:nth-child(3)").append(author_updatebox);
 
-										tr.find("td:nth-child(3)").empty();
-										tr.find("td:nth-child(3)").text(author);
 
-										tr.find("td:nth-child(4)").empty();
-										tr.find("td:nth-child(4)").text(price);
+								$(this).parent().parent().find("td:nth-child(4)").text("");
+								$(this).parent().parent().find("td:nth-child(4)").append(price_updatebox);
+								//$(this).parent().parent().find("[type=button]").attr("disabled", "disabled");
+
+								now.attr("value", "수정 완료");
+
+							}else if(now.attr("value")=="수정 완료"){
+								var isbn = $(this).parent().parent().attr("data-isbn");
+								var title = $(this).parent().parent().find("td:nth-child(2) > input").val();
+								var author = $(this).parent().parent().find("td:nth-child(3) > input").val();
+								var price = $(this).parent().parent().find("td:nth-child(4) > input").val();
+
+								var tr = $(this).parent().parent();
+
+								console.log(isbn+" / "+title + " / " + author + " / "+ price);
+
+								$.ajax({
+									url: "http://localhost:8080/book/bookUpdate",
+									type: "GET",
+									dataType: "jsonp",
+									jsonp: "callback",
+									data: {
+										isbn: isbn,
+										title: title,
+										author: author,
+										price: price
+
+									},
+									success: function (result) {
+
+										if(result==true){
+
+											alert("수정 성공");
+											now.attr("value", "수정");
+
+
+											tr.find("td:nth-child(2)").empty();
+											tr.find("td:nth-child(2)").text(title);
+
+											tr.find("td:nth-child(3)").empty();
+											tr.find("td:nth-child(3)").text(author);
+
+											tr.find("td:nth-child(4)").empty();
+											tr.find("td:nth-child(4)").text(price);
+										}
+
+										else{
+											alert("수정 fail");
+										}
+
+
+									},
+									error: function () {
+										alert("수정 실패");
 									}
 
-									else{
-										alert("수정 fail");
-									}
+								});
+
+							}
 
 
-								},
-								error: function () {
-									alert("수정 실패");
-								}
 
-							});
-						});
 
 
 					});
@@ -509,11 +499,14 @@ function searchBook() {
 
 
 
+						var modal_comment_title_tr=$("<tr><td></td></tr>").text("서평 보기 및 작성");
+
 						var modal_comment=$("<input/>").attr("type", "text").attr("class", "col-md-10").attr("id", "modal_comment").attr("placeholder", "comment").attr("size", "20");
 
 						var modal_comment_btn=$("<input />").attr("type", "button").attr("class", "col-md-2").attr("id", "modal_comment_btn").attr("value", "입력");
 						var modal_comment_div=$("<div></div>");
 						var modal_td10=$("<td colspan='2'></td>");
+
 
 						modal_comment_div.append(modal_comment);
 						modal_comment_div.append(modal_comment_btn);
@@ -533,6 +526,7 @@ function searchBook() {
 						modal_tr7.append(modal_td7);
 						modal_tr8.append(modal_td8);
 						modal_tr9.append(modal_td9);
+
 						modal_tr10.append(modal_td10);
 
 						modal_table.append(modal_tr1);
@@ -544,6 +538,7 @@ function searchBook() {
 						modal_table.append(modal_tr7);
 						modal_table.append(modal_tr8);
 						modal_table.append(modal_tr9);
+						modal_table.append(modal_comment_title_tr);
 						modal_table.append(modal_tr10);
 
 						modal_body.append(modal_table);
@@ -700,6 +695,16 @@ function searchBook() {
 
 										myisbn="";
 
+
+										var tr=$("<tr></tr>");
+										var name_td=$("<td></td>").text(myid);
+										var contents_td=$("<td></td>").text(mycomment);
+										tr.append(name_td).append(contents_td);
+
+										$("#modal_table").append(tr);
+										$("#modal_comment").val("");
+
+
 									},
 									error: function () {
 										alert("코멘트 입력 실패");
@@ -712,15 +717,70 @@ function searchBook() {
 					});
 
 
-
-
-
 				}
+
+				/*
+				 *
+				 * 페이징 처리
+				 *
+				 * */
+
+
+
+
+				$("div.pager").remove();
+				$('table.paginated').each(function() {
+					var currentPage = 0;
+					var numPerPage = 5;
+					var $table = $(this);
+
+					$table.bind('repaginate', function() {
+						$table.find('tbody tr').hide().slice(currentPage * numPerPage, (currentPage + 1) * numPerPage).show();
+					});
+
+					var numRows = $table.find('tbody tr').length;
+					var numPages = Math.ceil(numRows / numPerPage);
+					var $pager = $('<div class="pager"></div>');
+
+					for (var page = 0; page < numPages; page++) {
+						$('<span class="page-number"></span>').text(page + 1+"  ").css("font-size", "25px").bind('click', {newPage: page}, function(event) {
+
+							currentPage = event.data['newPage'];
+							$table.trigger('repaginate');
+							$(this).addClass('active').siblings().removeClass('active');
+
+						}).appendTo($pager).addClass('clickable');
+					}
+
+					$pager.insertBefore($table).find('span.page-number:first').addClass('active');
+
+
+					$("#Tbody > tr").tabs(".pager > span", {initialIndex: 1, effect: 'fade', fadeOutSpeed: 400});
+
+
+					$table.find('th').removeClass('sorted-asc').removeClass('sorted-desc');
+
+					if (sortDirection == 1) {
+						$header.addClass('sorted-asc');
+					}
+					else {
+						$header.addClass('sorted-desc');
+					}
+					$table.alternateRowColors();
+					$table.trigger('repaginate');
+				});
+
+
+
+
 			},
 			error:function(){
 				alert("error");
 			}
 		});
+
+
+
 	}
 }
 
@@ -746,6 +806,11 @@ function mySort() {
 
 var base64 = null;
 
+/*
+*
+* 도서 입력
+*
+* */
 $(function () {
 
 	// jQuery의 이벤트 처리는 on() method 이용
@@ -772,6 +837,8 @@ $(function () {
 			},
 			success:function (result) {
 				alert("입력 성공");
+
+				$(location).attr('href', "list.html");
 			},
 			error:function () {
 				alert("입력 실패");
@@ -1061,6 +1128,14 @@ $("#current_status").on("click", function (){
 				tr.append(return_td);
 			}
 
+
+
+
+			/*
+			*
+			* 반납 버튼 이벤트 처리
+			*
+			* */
 			myreturn.on('click', function () {
 
 
@@ -1076,6 +1151,9 @@ $("#current_status").on("click", function (){
 						if(result==true){
 							alert("반납 성공");
 							myreturn.attr("class", "btn btn-success").attr("value", "대여");
+
+
+							$(location).attr('href', "list.html");
 
 						}else{
 							alert("반납 실패");
