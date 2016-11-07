@@ -2,6 +2,12 @@ $( document ).ready(function() {
 	isSession();
 });
 
+
+/*
+*
+* 세션
+*
+* */
 function isSession() {
 	$.ajax({
 		url:"http://localhost:8080/book/checkSession",
@@ -13,6 +19,7 @@ function isSession() {
 
 			if(result.id==null){
 				console.log("세션 없음");
+
 
 			}else{
 				console.log("세션 존재함");
@@ -719,59 +726,44 @@ function searchBook() {
 
 				}
 
+
+
 				/*
 				 *
 				 * 페이징 처리
 				 *
 				 * */
+				$(document).ready(function(){
+
+					$('#nav').empty();
+
+					$('#data').after('<div id="nav"></div>');
+					var rowsShown = 4;
+					var rowsTotal = $('#myTbody tr').length;
+					var numPages = rowsTotal/rowsShown;
+
+					for(i = 0;i < numPages;i++) {
+						var pageNum = i + 1;
+						$('#nav').append('<a href="#" rel="'+i+'">'+pageNum+'</a> ');
+					}
+
+					$('#myTbody tr').hide();
+					$('#myTbody tr').slice(0, rowsShown).show();
+					$('#nav a:first').addClass('active');
 
 
+					$('#nav a').bind('click', function(){
 
+						$('#nav a').removeClass('active');
+						$(this).addClass('active');
+						var currPage = $(this).attr('rel');
+						var startItem = currPage * rowsShown;
+						var endItem = startItem + rowsShown;
+						$('#myTbody tr').css('opacity','0.0').hide().slice(startItem, endItem).
+						css('display','table-row').animate({opacity:1}, 300);
 
-				$("div.pager").remove();
-				$('table.paginated').each(function() {
-					var currentPage = 0;
-					var numPerPage = 5;
-					var $table = $(this);
-
-					$table.bind('repaginate', function() {
-						$table.find('tbody tr').hide().slice(currentPage * numPerPage, (currentPage + 1) * numPerPage).show();
 					});
-
-					var numRows = $table.find('tbody tr').length;
-					var numPages = Math.ceil(numRows / numPerPage);
-					var $pager = $('<div class="pager"></div>');
-
-					for (var page = 0; page < numPages; page++) {
-						$('<span class="page-number"></span>').text(page + 1+"  ").css("font-size", "25px").bind('click', {newPage: page}, function(event) {
-
-							currentPage = event.data['newPage'];
-							$table.trigger('repaginate');
-							$(this).addClass('active').siblings().removeClass('active');
-
-						}).appendTo($pager).addClass('clickable');
-					}
-
-					$pager.insertBefore($table).find('span.page-number:first').addClass('active');
-
-
-					$("#Tbody > tr").tabs(".pager > span", {initialIndex: 1, effect: 'fade', fadeOutSpeed: 400});
-
-
-					$table.find('th').removeClass('sorted-asc').removeClass('sorted-desc');
-
-					if (sortDirection == 1) {
-						$header.addClass('sorted-asc');
-					}
-					else {
-						$header.addClass('sorted-desc');
-					}
-					$table.alternateRowColors();
-					$table.trigger('repaginate');
 				});
-
-
-
 
 			},
 			error:function(){
@@ -1026,7 +1018,7 @@ $("#showMyComment").on("click", function () {
 				del_td.append(del_btn);
 
 				tr.append(seq_id);
-				tr.append(id_td);
+
 				tr.append(title_td);
 				tr.append(author_td);
 				tr.append(comment_td);
